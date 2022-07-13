@@ -4,8 +4,8 @@ import { Consumable } from "./Consumable";
 export class Pizza extends Consumable {
     protected numberOfSlices: number;
     protected slicesEaten: number = 0;
-    constructor(name: string, value: number, weight: number, spoiled: boolean, numberOfSlices: number) {
-        super(name, value, weight, spoiled);
+    constructor(numberOfSlices: number, spoiled: boolean) {
+        super("pizza", 25, 0.4, spoiled);
         this.numberOfSlices = numberOfSlices;
     }
     

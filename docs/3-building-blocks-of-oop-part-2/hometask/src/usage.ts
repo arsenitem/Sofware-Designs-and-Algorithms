@@ -12,7 +12,7 @@ const inventory: Inventory = new Inventory();
 const a: Item = new Sword(30.4219, 0.7893, 300, 2.032);
 const b: Item = new Bow(40, 0.7893, 200, 2);
 const c: Item = new Sword(40, 1, 100, 3);
-const pizza: Item = new Pizza("pizza", 5, 0.54, false, 8);
+const pizza: Item = new Pizza(8, false);
 
 // Add the items to the inventory
 inventory.addItem(a);
