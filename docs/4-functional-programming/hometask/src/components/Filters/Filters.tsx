@@ -31,20 +31,21 @@ const OPTIONS = [
 export function Filters(props: FiltersProps) {
   const [selectedFilter, setSelectedFilter] = useState<string[]>([]);
 
-  const onChange = ({ title }) => {
-    console.log(title); // for debugging
+  const onChange = (option) => {
+    console.log(option); // for debugging
 
     let updatedFilters;
-    if (selectedFilter.find((filter) => filter === title)) {
+    if (selectedFilter.find((filter: any) => filter.key === option.key)) {
       updatedFilters = selectedFilter.filter(
-        (filter) => filter !== title
+        (filter: any) => filter.key !== option.key
       );
     } else {
-      updatedFilters = [...selectedFilter, title];
+      updatedFilters = [...selectedFilter, option];
     }
 
     setSelectedFilter(updatedFilters);
-    props.updateStore(updatedFilters);
+    console.log(updatedFilters)
+    props.updateStore(updatedFilters.map((item) => item.key));
   };
 
   return (
@@ -58,13 +59,13 @@ export function Filters(props: FiltersProps) {
             key={option.key}
           >
             <Checkbox
-              checked={!!selectedFilter.find(filter => filter === option.title)}
+              checked={!!selectedFilter.find((filter:any) => filter.key === option.key)}
               value={option.title}
               onChange={() => onChange(option)}
               size="small"
               color="primary"
             />{' '}
-            {option.key}
+            {option.title}
           </li>
         ))}
       </ul>
