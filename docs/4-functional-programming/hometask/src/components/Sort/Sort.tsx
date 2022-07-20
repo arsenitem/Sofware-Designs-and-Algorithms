@@ -22,7 +22,7 @@ interface SortProps {
 
 export function Sort(props: SortProps) {
   const handleChange = (value) => {
-    console.log(value); // for debugging
+    props.updateStore(value);
   };
 
   return (

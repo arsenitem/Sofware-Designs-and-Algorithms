@@ -25,6 +25,7 @@ export function Search(props: SearchProps) {
   const onChange = (value) => {
     console.log(value); // for debugging
     setSearchedValue(value);
+    props.updateStore(value);
   }
 
   return (

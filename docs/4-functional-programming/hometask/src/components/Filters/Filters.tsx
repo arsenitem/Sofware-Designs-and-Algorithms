@@ -20,9 +20,11 @@ interface FiltersProps {
 const OPTIONS = [
   {
     title: 'Without posts',
+    key: 0
   },
   {
     title: 'More than 100 posts',
+    key: 1
   },
 ];
 
@@ -42,6 +44,7 @@ export function Filters(props: FiltersProps) {
     }
 
     setSelectedFilter(updatedFilters);
+    props.updateStore(updatedFilters);
   };
 
   return (
@@ -52,7 +55,7 @@ export function Filters(props: FiltersProps) {
           <li
             value={option.title}
             onClick={() => onChange(option)}
-            key={option.title}
+            key={option.key}
           >
             <Checkbox
               checked={!!selectedFilter.find(filter => filter === option.title)}
@@ -61,7 +64,7 @@ export function Filters(props: FiltersProps) {
               size="small"
               color="primary"
             />{' '}
-            {option.title}
+            {option.key}
           </li>
         ))}
       </ul>
