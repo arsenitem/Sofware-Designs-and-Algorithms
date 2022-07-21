@@ -20,38 +20,8 @@ function App() {
   const [filter, setFilter] = useState<number[]>([]);
   const [sort, setSort] = useState<string>('');
 
-  const [data, setData] = useState<Row[]>(undefined);
-  const [initalData, setInitialData] = useState<Row[]>(undefined);
-
-  const searchPosts = (query: string, rows: Row[]): Row[] => {
-    if (!rows) return; 
-    const lowerCaseQuery = query.toLocaleLowerCase();
-    const searchResults = rows.filter((data: Row) => {
-      return data.country.toLocaleLowerCase().includes(lowerCaseQuery) ||
-        data.name.toLocaleLowerCase().includes(lowerCaseQuery) ||
-        data.username.toLocaleLowerCase().includes(lowerCaseQuery);
-    });
-    return searchResults;
-  }
-
-  const filterPosts = (filters: number[], rows: Row[]): Row[] =>  {
-    if (!rows) return; 
-    const result: Row[] = [];
-    filter.forEach((filterKey: number) => {
-      switch(filterKey) {
-        case 0: 
-          const noPosts = rows.filter((row: Row) => row.posts === 0)
-          result.push(...noPosts)
-        break;
-        case 1: 
-          const posts100 = rows.filter((row: Row) => row.posts >= 100)
-          result.push(...posts100)
-        break;
-      }
-      
-    });
-    return result;
-  };
+  const [data, setData] = useState<Row[]>([]);
+  const [initalData, setInitialData] = useState<Row[]>([]);
 
   const sortPosts = (direction: string, rows: Row[]): Row[] => {
     if (!rows) return;
@@ -59,7 +29,43 @@ function App() {
       return direction === "asc" ? rowA.lastPayments - rowB.lastPayments : rowB.lastPayments - rowA.lastPayments;
     })
   };
- 
+  const createSearchFilter = (query: string) : Function => {
+    const lowerCaseQuery = query.toLocaleLowerCase();
+    if (lowerCaseQuery.length === 0) return null;
+    return (data: Row) => {
+      return  data.country.toLocaleLowerCase().includes(lowerCaseQuery) ||
+      data.name.toLocaleLowerCase().includes(lowerCaseQuery) ||
+      data.username.toLocaleLowerCase().includes(lowerCaseQuery);
+    }
+  };
+  const createPostsFilter = (filters: number[]) : Function => {
+    if (filters.length === 0) return null;
+    return (data: Row) => {
+      return filters.some((fiterPosts: number) => {
+        switch(fiterPosts) {
+          case 0: 
+            return data.posts === 0
+          case 1: 
+            return data.posts >= 100
+        }
+      })
+    }
+  }
+  const orFilters = (...args) => {
+    const filters = args.filter((f: Function) => f);
+    return (array: Row[]): Row[] => {
+      // find elements in array
+      if (filters.length > 0) {
+        return array.filter((row: Row) => {
+          // where elements suits any of filter conditions
+          return filters.some((filter: Function) => {
+            return filter(row);
+          })
+        })
+      }
+      return array;
+    }
+  };
   useEffect(() => {
     // fetching data from API
     Promise.all([getImages(), getUsers(), getAccounts()]).then(([images, users, accounts]: [Image[], User[], Account[]]) => {
@@ -70,17 +76,12 @@ function App() {
 
   // get computed data
   useEffect(() => {
-    console.log(filter);
-    let filteredPosts;
-    if (filter.length > 0) {
-      filteredPosts = filterPosts(filter, initalData);
-    } else {
-      filteredPosts = searchPosts(searchQuery, initalData);
-    }
-
-    const result = sortPosts(sort, filteredPosts);
-    setData(result);
-  }, [ searchQuery, filter, sort ])
+      const searchFilter = createSearchFilter(searchQuery);
+      const postsFilter = createPostsFilter(filter);
+      const filteredRows = orFilters(postsFilter, searchFilter)(initalData);
+      const result = sortPosts(sort, filteredRows);
+      setData(result);
+  }, [ initalData, searchQuery, filter, sort ])
 
   return (
     <StyledEngineProvider injectFirst>
