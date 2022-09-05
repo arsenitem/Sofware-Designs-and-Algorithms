@@ -32,15 +32,14 @@ export default class Dijkstra {
             if (currentVertex) {
                 // Consider all vertices that have a straight path from W
                 const neighbours = this.findNeigbours(currentVertex);
-                // console.log("sosedi ", currentVertex.name, neighbours)
                 neighbours.forEach((vertex) => {
                     // Neighbour verticle weight = W + weight of path from W to neighbour verticle 
                     // Update weight for neighbours if they are lower than previous values
                     if (verticlesWeight[currentVertex.name] + vertex.weight < verticlesWeight[vertex.value]) {
-                        if (verticlesWeight[vertex.value] !== Infinity) {
-                            paths[currentVertex.name].splice(paths[currentVertex.name].length - 1, 0, vertex.value);
+                        verticlesWeight[vertex.value] = verticlesWeight[currentVertex.name] + vertex.weight;
+                        if (currentVertex.name !== start.name) {
+                            paths[vertex.value].push(currentVertex.name);
                         }
-                        verticlesWeight[vertex.value] = verticlesWeight[currentVertex.name] + vertex.weight
                     } 
                 })
                 
@@ -50,11 +49,8 @@ export default class Dijkstra {
                 visited.push(minVertex as Vertex);
             }    
         }
-        console.log(verticlesWeight)
-        console.log(paths);
-        return verticlesWeight;
-       
-        // console.log(visited);
+        
+        return this.formatResult(verticlesWeight, paths);
     }
 
     private findNeigbours(vertex: Vertex) {
@@ -93,9 +89,19 @@ export default class Dijkstra {
             [key: string]: Array<string>
         } = {};
         this.graph.vertices.forEach((v: Vertex) => {
-            paths[v.name] = [start.name, v.name];
+            paths[v.name] = [];
         });
-        paths[start.name] = [];
         return paths;
+    }
+
+    private formatResult(weights, paths) {
+        const res = {};
+        this.graph.vertices.forEach((vertex) => {
+            res[vertex.name] = {
+                path: paths[vertex.name],
+                distance: weights[vertex.name]
+            }
+        });
+        return res;
     }
 }

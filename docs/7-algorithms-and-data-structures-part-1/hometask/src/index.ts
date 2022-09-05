@@ -31,4 +31,5 @@ edges.forEach(edge => {
 
 const dijkstra = new Dijkstra(graph);
 
-dijkstra.findAllShortestPaths(verticles[0]);
+const res = dijkstra.findAllShortestPaths(verticles[0]);
+console.log(res);
