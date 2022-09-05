@@ -8,7 +8,9 @@ const verticles = [
     new Vertex('1', 15, 15),
     new Vertex('2', 0, 12),
     new Vertex('3', 3, 42),
-    new Vertex('4', 50, 15)
+    new Vertex('4', 50, 15),
+    new Vertex('5', 50, 15),
+    new Vertex('6', 50, 15)
 ]
 
 const edges = [
@@ -18,6 +20,8 @@ const edges = [
     new Edge(verticles[1], verticles[3], 6),
     new Edge(verticles[1], verticles[2], 5),
     new Edge(verticles[2], verticles[3], 1),
+    new Edge(verticles[3], verticles[5], 2),
+    new Edge(verticles[5], verticles[6], 3),
 ];
 const graph: WeightedGraph = new WeightedGraph();
 

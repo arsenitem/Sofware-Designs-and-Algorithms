@@ -16,7 +16,8 @@ export default class Dijkstra {
         let verticlesWeight = {
             [start.name]: 0,
         }
-        const paths = this.initializePaths(start);
+
+        const ancestors = {};
         // initialize distance for all verticles
         this.graph.vertices.forEach((vertex) => {
             if (vertex.name !== start.name) {
@@ -35,12 +36,13 @@ export default class Dijkstra {
                 neighbours.forEach((vertex) => {
                     // Neighbour verticle weight = W + weight of path from W to neighbour verticle 
                     // Update weight for neighbours if they are lower than previous values
+                    // So called relaxation
                     if (verticlesWeight[currentVertex.name] + vertex.weight < verticlesWeight[vertex.value]) {
                         verticlesWeight[vertex.value] = verticlesWeight[currentVertex.name] + vertex.weight;
-                        if (currentVertex.name !== start.name) {
-                            paths[vertex.value].push(currentVertex.name);
-                        }
+                        // when update vertex weight update its ancestors;
+                        ancestors[vertex.value] = currentVertex.name
                     } 
+                    
                 })
                 
                 // Select from not visited the one with minimum weight;
@@ -49,8 +51,8 @@ export default class Dijkstra {
                 visited.push(minVertex as Vertex);
             }    
         }
-        
-        return this.formatResult(verticlesWeight, paths, start);
+        console.log(ancestors);
+        return this.formatResult(verticlesWeight, ancestors, start);
     }
 
     private findNeigbours(vertex: Vertex) {
@@ -84,29 +86,30 @@ export default class Dijkstra {
         return minKey;
     }
 
-    private initializePaths(start: Vertex) {
-        let paths: {
-            [key: string]: Array<string>
-        } = {};
-        this.graph.vertices.forEach((v: Vertex) => {
-            paths[v.name] = [];
-        });
-        return paths;
-    }
-
-    private formatResult(weights, paths, start: Vertex) {
+    private formatResult(weights, ancestors, start: Vertex) {
         const res = {};
         this.graph.vertices.forEach((vertex) => {
-            const path = paths[vertex.name];
-            if (weights[vertex.name] < Infinity && vertex.name !== start.name) {
-                path.push(vertex.name)
-                path.splice(0,0, start.name)
-            }
+            const path = this.restorePath(vertex, ancestors, start);
             res[vertex.name] = {
                 path,
                 distance: weights[vertex.name]
             }
         });
         return res;
+    }
+
+    private restorePath(vertex: Vertex, ancestors: any, start: Vertex) {
+        const path = []
+        let currentAncestor = ancestors[vertex.name];
+        if (currentAncestor) {
+            path.unshift(vertex.name);
+            while(currentAncestor !== start.name) {
+                path.unshift(currentAncestor);
+                currentAncestor = ancestors[currentAncestor];
+            }
+            path.unshift(currentAncestor);
+        }
+        return path;
+       
     }
 }
