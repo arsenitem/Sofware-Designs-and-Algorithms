@@ -7,6 +7,6 @@ export default class Job {
     }
 
     execute(): void {
-        console.log('doing some job with priority ', this.priority);
+        console.log("processing", this.priority)
     }
 }

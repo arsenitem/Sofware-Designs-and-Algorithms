@@ -19,11 +19,15 @@ while(runner.jobs.length) {
     runner.extractMax()?.execute();
     console.log(runner.jobs)
 }
+console.time('1')
 
 for (let i = 0; i < 10000; i++) {
+    const jobPriority = Math.floor(Math.random() * 1000)
     runner.insert(new Job(i,i));
 }
 
 while(runner.jobs.length) {
-    runner.extractMax()?.execute();
+    runner.extractMax()?.execute()
 }
+
+console.timeEnd('1')
